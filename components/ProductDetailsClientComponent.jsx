@@ -1,4 +1,5 @@
 'use client';
+const URL = 'https://your-domain.com';
 
 import React, { useEffect, useState } from 'react';
 import '@/pageStyles/ProductDetails.css';
@@ -137,7 +138,56 @@ function ProductDetailsClientComponent({ initialProduct, productId }) {
 
     return (
         <>
-            <PageTitle title={`${product.name} -Details`} />
+            // Add this inside the main return function of ProductDetailsClientComponent
+<script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+            "@context": "https://schema.org/",
+            "@type": "Product",
+            "name": product.name,
+            "image": product.image.map((img) => img.url),
+            "description": product.description,
+            "sku": product._id,
+            "brand": {
+                "@type": "Brand",
+                "name": "My E-Shop"
+            },
+            "offers": {
+                "@type": "Offer",
+                "url": `${URL}/product/${product._id}`,
+                "priceCurrency": "USD",
+                "price": product.offeredPrice ? product.offeredPrice : product.price,
+                "itemCondition": "https://schema.org/NewCondition",
+                "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+                "seller": {
+                    "@type": "Organization",
+                    "name": "My E-Shop"
+                }
+            },
+            "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": product.ratings,
+                "reviewCount": product.numOfReviews
+            },
+            "review": product.reviews.map((review) => ({
+                "@type": "Review",
+                "author": {
+                    "@type": "Person",
+                    "name": review.name
+                },
+                "datePublished": review.createdAt,
+                "reviewBody": review.comment,
+                "reviewRating": {
+                    "@type": "Rating",
+                    "ratingValue": review.rating
+                }
+            }))
+        })
+    }}
+/>
+
+<PageTitle title={`${product.name} -Details`} />
             <div className="product-details-container">
                 <div className="product-detail-container">
                     <div className="product-image-container">
