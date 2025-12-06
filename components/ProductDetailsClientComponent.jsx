@@ -163,7 +163,10 @@ function ProductDetailsClientComponent({ initialProduct, productId }) {
                     </div>
                     <div className="product-info">
                         <h2>{product.name}</h2>
-                        <p className='product-description'>{product.description}</p>
+                        <div
+                            className='product-description'
+                            dangerouslySetInnerHTML={{ __html: product.description }}
+                        />
                         <p className="product-category">Category: {product.category?.name}</p>
                         <p className="product-price">
                             {product.offeredPrice ? (
