@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import {Phone,Mail, GitHub, LinkedIn, YouTube, Instagram} from '@mui/icons-material';
+import {Phone,Mail, Facebook, LinkedIn, YouTube, Instagram} from '@mui/icons-material';
 import '../componentStyles/Footer.css';
 import Link from 'next/link';
 
@@ -19,7 +19,7 @@ function Footer() {
           <h3>Follow Me</h3>
           <div className="social-links">
             <a href="http://" target='_blank'>
-            <GitHub className='social-icon'/>
+            <Facebook className='social-icon'/>
             </a>
             <a href="http://" target='_blank'>
             <LinkedIn className='social-icon'/>
