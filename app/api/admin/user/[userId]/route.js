@@ -6,7 +6,8 @@ import HandleError from '@/utils/handleError';
 
 export async function GET(req, { params }) {
     await connectMongoDatabase();
-    const { userId } = params;
+    const resolvedParams = await params;
+    const { userId } = resolvedParams;
 
     try {
         const authResult = await verifyUserAuth(req);
@@ -41,7 +42,8 @@ export async function GET(req, { params }) {
 
 export async function PUT(req, { params }) {
     await connectMongoDatabase();
-    const { userId } = params;
+    const resolvedParams = await params;
+    const { userId } = resolvedParams;
 
     try {
         const authResult = await verifyUserAuth(req);
@@ -82,7 +84,8 @@ export async function PUT(req, { params }) {
 
 export async function DELETE(req, { params }) {
     await connectMongoDatabase();
-    const { userId } = params;
+    const resolvedParams = await params;
+    const { userId } = resolvedParams;
 
     try {
         const authResult = await verifyUserAuth(req);
