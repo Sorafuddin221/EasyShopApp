@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Product from './Product';
 import Loader from './Loader';
 import axios from 'axios';
-import '../../componentStyles/TrendingProducts.css'; // Assuming a new CSS file for this component
+import '../componentStyles/TrendingProducts.css'; // Assuming a new CSS file for this component
 
 const TrendingProducts = () => {
     const [products, setProducts] = useState([]);
