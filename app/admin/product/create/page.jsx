@@ -193,12 +193,27 @@ function CreateProductPage() {
                     <input value={name} onChange={(e) => setName(e.target.value)} name='name' type="text" className="form-input" placeholder='Enter Product Name' required />
                     <input value={price} onChange={(e) => setPrice(e.target.value)} name='Price' type="number" className="form-input" placeholder='Enter Product Price' required />
                     <input value={offeredPrice} onChange={(e) => setOfferedPrice(e.target.value)} name='offeredPrice' type="number" className="form-input" placeholder='Enter Offered Price' />
-                    <textarea
+import { Editor } from '@tinymce/tinymce-react';
+// ... rest of the component
+
+// Inside the form, replace the textarea with:
+                    <Editor
+                        apiKey="YOUR_TINYMCE_API_KEY" // Replace with your actual TinyMCE API key
+                        init={{
+                            height: 300,
+                            menubar: false,
+                            plugins: [
+                                'advlist autolink lists link image charmap print preview anchor',
+                                'searchreplace visualblocks code fullscreen',
+                                'insertdatetime media table paste code help wordcount'
+                            ],
+                            toolbar:
+                                'undo redo | formatselect | bold italic backcolor | \
+                                alignleft aligncenter alignright alignjustify | \
+                                bullist numlist outdent indent | removeformat | help'
+                        }}
                         value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        className="form-input"
-                        placeholder="Enter Product Description"
-                        required
+                        onEditorChange={(content, editor) => setDescription(content)}
                     />
                     <select value={category} onChange={(e) => setCategory(e.target.value)} name='category' id="" className="form-select">
                         <option value="" required >Choose a Category</option>
