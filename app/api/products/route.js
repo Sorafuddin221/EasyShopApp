@@ -8,70 +8,137 @@ import APIFunctionality from '@/utils/apiFunctionality';
 export async function GET(req) {
     await connectMongoDatabase();
     const { searchParams } = new URL(req.url);
-    let queryStr = Object.fromEntries(searchParams.entries()); // Use let as queryStr will be modified
+    let queryStr = Object.fromEntries(searchParams.entries());
 
-
+    const discountParam = searchParams.get('discount');
+    const page = Number(queryStr.page) || 1;
+    const resultsPerPage = 6;
 
     try {
-        const resultsPerPage = 6;
-        let baseQuery = Product.find(); // Start with a base Mongoose query
-
-        const tabKeyword = queryStr.keyword; // Store the keyword for tab logic
-        const specialKeywords = ['featured', 'new-arrival', 'offer'];
-
-        // --- Tab-specific logic ---
-        if (specialKeywords.includes(tabKeyword)) {
-            // Remove 'keyword' from queryStr to prevent APIFunctionality.search() from using it
-            delete queryStr.keyword; 
-
-            if (tabKeyword === 'new-arrival') {
-                queryStr.sort = '-createdAt'; // Set sort for new arrivals
-            } else if (tabKeyword === 'offer') {
-                // Filter by offeredPrice existing and not null
-                baseQuery = baseQuery.where('offeredPrice').exists(true).ne(null);
-            } else if (tabKeyword === 'featured') {
-                queryStr.sort = '-ratings'; // Sort by ratings for featured
+        if (discountParam) {
+            const discountValue = Number(discountParam);
+            if (isNaN(discountValue) || discountValue <= 0 || discountValue > 100) {
+                return NextResponse.json({ message: "Invalid discount value provided." }, { status: 400 });
             }
+
+            let aggregationPipeline = [
+                {
+                    $match: {
+                        price: { $exists: true, $ne: null, $gt: 0 },
+                        offeredPrice: { $exists: true, $ne: null, $gte: 0 } 
+                    }
+                },
+                {
+                    $addFields: {
+                        discountPercentage: {
+                            $cond: {
+                                if: { $gt: ["$price", 0] },
+                                then: { $multiply: [{ $subtract: [1, { $divide: ["$offeredPrice", "$price"] }] }, 100] },
+                                else: 0
+                            }
+                        }
+                    }
+                },
+                {
+                    $match: {
+                        discountPercentage: { $gte: discountValue }
+                    }
+                }
+            ];
+
+            const countPipeline = [...aggregationPipeline, { $count: "total" }];
+            const countResult = await Product.aggregate(countPipeline);
+            const productCount = countResult.length > 0 ? countResult[0].total : 0;
+
+            const totalPages = Math.ceil(productCount / resultsPerPage);
+
+            if (page > totalPages && productCount > 0) {
+                return NextResponse.json({ message: "This page does not exist" }, { status: 404 });
+            }
+
+            const sortBy = queryStr.sort || '-discountPercentage'; 
+            let sortStage = {};
+            if (sortBy.startsWith('-')) {
+                sortStage[sortBy.substring(1)] = -1;
+            } else {
+                sortStage[sortBy] = 1;
+            }
+
+            aggregationPipeline.push({ $sort: sortStage });
+            aggregationPipeline.push({ $skip: resultsPerPage * (page - 1) });
+            aggregationPipeline.push({ $limit: resultsPerPage });
+            
+            const products = await Product.aggregate(aggregationPipeline);
+
+            const populatedProducts = await Product.populate(products, { path: 'category' });
+
+            if (!populatedProducts || populatedProducts.length === 0) {
+                return NextResponse.json({ success: true, products: [], productCount: 0, resultsPerPage: resultsPerPage, totalPages: 0, currentpage: 1 }, { status: 200 });
+            }
+
+            return NextResponse.json({
+                success: true,
+                products: populatedProducts,
+                productCount,
+                resultsPerPage,
+                totalPages,
+                currentpage: page
+            }, { status: 200 });
+
+        } else {
+            // Existing logic using APIFunctionality
+            let baseQuery = Product.find();
+
+            const tabKeyword = queryStr.keyword;
+            const specialKeywords = ['featured', 'new-arrival', 'offer'];
+
+            if (specialKeywords.includes(tabKeyword)) {
+                delete queryStr.keyword;
+
+                if (tabKeyword === 'new-arrival') {
+                    queryStr.sort = '-createdAt';
+                } else if (tabKeyword === 'offer') {
+                    baseQuery = baseQuery.where('offeredPrice').exists(true).ne(null);
+                } else if (tabKeyword === 'featured') {
+                    queryStr.sort = '-ratings';
+                }
+            }
+
+            const apiFeatures = new APIFunctionality(baseQuery, queryStr)
+                .search()
+                .filter()
+                .sort();
+
+            const filteredQuery = apiFeatures.query.clone();
+            const productCount = await filteredQuery.countDocuments();
+            
+            const totalPages = Math.ceil(productCount / resultsPerPage);
+
+            if (page > totalPages && productCount > 0) {
+                return NextResponse.json({ message: "This page does not exist" }, { status: 404 });
+            }
+
+            apiFeatures.pagination(resultsPerPage);
+            
+            const products = await apiFeatures.query.populate('category');
+            
+            if (!products || products.length === 0) {
+                return NextResponse.json({ success: true, products: [], productCount: 0, resultsPerPage: resultsPerPage, totalPages: 0, currentpage: 1 }, { status: 200 });
+            }
+
+            return NextResponse.json({
+                success: true,
+                products,
+                productCount,
+                resultsPerPage,
+                totalPages,
+                currentpage: page
+            }, { status: 200 });
         }
-        // --- End Tab-specific logic ---
-
-
-        // Apply other API functionalities
-        const apiFeatures = new APIFunctionality(baseQuery, queryStr)
-            .search() // Will only apply if general 'keyword' exists in queryStr (not if it was a tab keyword)
-            .filter() // Will apply other filters like price, category etc. and now offeredPrice if set
-            .sort(); // This will now use queryStr.sort or default to '-createdAt'
-
-
-        const filteredQuery = apiFeatures.query.clone();
-        const productCount = await filteredQuery.countDocuments();
-        
-        const totalPages = Math.ceil(productCount / resultsPerPage);
-        const page = Number(queryStr.page) || 1;
-
-        if (page > totalPages && productCount > 0) {
-            return NextResponse.json({ message: "This page does not exist" }, { status: 404 });
-        }
-
-        apiFeatures.pagination(resultsPerPage);
-        
-        const products = await apiFeatures.query.populate('category');
-        
-        if (!products || products.length === 0) {
-            return NextResponse.json({ success: true, products: [], productCount: 0, resultsPerPage: 6, totalPages: 0, currentpage: 1 }, { status: 200 });
-        }
-
-        return NextResponse.json({
-            success: true,
-            products,
-            productCount,
-            resultsPerPage,
-            totalPages,
-            currentpage: page
-        }, { status: 200 });
 
     } catch (error) {
         console.error("Error in /api/products GET:", error);
         return NextResponse.json({ message: `Error: ${error.message}` }, { status: 500 });
     }
+
 }
