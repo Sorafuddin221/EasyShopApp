@@ -13,11 +13,12 @@ import connectMongoDatabase from '@/lib/db';
 import ProductModel from '@/models/productModel';
 import APIFunctionality from '@/utils/apiFunctionality';
 import Filters from '@/components/Filters';
+import ProductsClientComponent from './ProductsClientComponent'; // New Import
 import { getServerSession } from 'next-auth'; // Assuming next-auth is or will be used
 
 async function getProducts({ keyword, category, page = 1 }) {
   await connectMongoDatabase();
-  let queryStr = {};
+  let queryStr = { page }; // Include page in queryStr
   if (keyword) {
     queryStr.keyword = keyword;
   }
@@ -59,6 +60,14 @@ async function getCategories() {
   return JSON.parse(JSON.stringify(categories));
 }
 
+async function getRecentProducts() {
+  await connectMongoDatabase();
+  const recentProducts = await ProductModel.find({})
+    .sort({ createdAt: -1 })
+    .limit(5);
+  return JSON.parse(JSON.stringify(recentProducts));
+}
+
 export default async function ProductsPage({ searchParams }) {
   let resolvedSearchParams;
   // This is a workaround for an unusual environment where searchParams is a Promise.
@@ -68,35 +77,23 @@ export default async function ProductsPage({ searchParams }) {
     resolvedSearchParams = searchParams;
   }
   
-  const { keyword, category, page } = resolvedSearchParams;
-  const { products, productCount, totalPages, currentPage } = await getProducts({ keyword, category, page });
-  const categories = await getCategories();
-
-  return (
-    <>
-    
-      <PageTitle title="All Products" />
-      {/* Navbar and Footer are in layout.jsx, no need to include here */}
-      <div className='products-layout'>
-        <Filters categories={categories} /> {/* This will be a client component */}
-        <div className="products-section">
-          {products && products.length > 0 ? (
-            <div className="products-product-container">
-              {products.map((product) => (
-                <Product key={product._id} product={product} />
-              ))}
-            </div>
-          ) : (
-            <NoProducts keyword={keyword} />
-          )}
-          {totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-            />
-          )}
-        </div>
-      </div>
-    </>
+    const { keyword, category, page } = resolvedSearchParams;
+    const { products, productCount, totalPages, currentPage } = await getProducts({ keyword, category, page });
+    const categories = await getCategories();
+    const recentProducts = await getRecentProducts();
+  
+    return (
+      <>
+      
+        <PageTitle title="All Products" />
+        {/* Navbar and Footer are in layout.jsx, no need to include here */}
+        <div className='products-layout'>
+          <Filters categories={categories} recentProducts={recentProducts} /> {/* This will be a client component */}
+          <ProductsClientComponent
+              products={products}
+              totalPages={totalPages}                  currentPage={currentPage}
+                  keyword={keyword}
+              />
+            </div>    </>
   );
 }
