@@ -103,6 +103,10 @@
   height: 100vh;
 }
 
+.table-responsive {
+  overflow-x: auto;
+}
+
 @media (max-width: 768px) {
   .order-container {
     padding: 15px;

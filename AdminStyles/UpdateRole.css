@@ -14,12 +14,10 @@
     width: 100%;
     max-width: 500px; 
     margin: 0 auto; 
-    height: 350px;;
   }
   .update-user-role-form {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;;
   }
   
   .form-group {
@@ -57,5 +55,11 @@
   
   .btn:hover {
     background-color: var(--bg-primary);
+  }
+
+  @media (max-width: 768px) {
+    .update-user-role-container {
+      padding: 15px;
+    }
   }
   

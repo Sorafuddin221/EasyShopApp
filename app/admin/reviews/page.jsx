@@ -63,6 +63,7 @@ function ReviewsListPage() {
                     <PageTitle title="All Reviews" />
                     <div className="reviews-list-container">
                         <h1 className='reviews-list-title'>ALL Products</h1>
+                        <div className="table-responsive">
                         <table className="reviews-table">
                             <thead>
                                 <tr>
@@ -92,8 +93,10 @@ function ReviewsListPage() {
                                 ))}
                             </tbody>
                         </table>
+                        </div>
                         {selectedProduct && reviews && reviews.length > 0 && (<div className="reviews-details">
                             <h2>Reviews for Product</h2>
+                            <div className="table-responsive">
                             <table className='reviews-table'>
                                 <thead>
                                     <tr>
@@ -118,6 +121,7 @@ function ReviewsListPage() {
                                     ))}
                                 </tbody>
                             </table>
+                            </div>
                         </div>)}
                     </div>
                 </>

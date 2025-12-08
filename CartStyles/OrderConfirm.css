@@ -78,6 +78,10 @@
     background-color: var(--bg-secondary);
 }
 
+.table-responsive {
+    overflow-x: auto;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .confirm-table-container {

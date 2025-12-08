@@ -468,7 +468,13 @@ shipping summary
 .shipping-item {
   margin-top: 10px;
   display: flex;
-  justify-content:last baseline;
+  justify-content:flex-start;
   margin-bottom: 1rem;
   color: #666;
+}
+
+@media (min-width: 769px) {
+  .price-summary, .shipping-summary {
+    top: 2rem;
+  }
 }

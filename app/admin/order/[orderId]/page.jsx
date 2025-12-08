@@ -82,6 +82,7 @@ import { getAdminOrderDetails, removeErrors, removeSuccess, updateOrderStatus } 
                 </div>
                 <div className="order-items">
                     <h2>Order Items</h2>
+                    <div className="table-responsive">
                     <table className="order-table">
                         <thead>
                             <tr>
@@ -104,6 +105,7 @@ import { getAdminOrderDetails, removeErrors, removeSuccess, updateOrderStatus } 
                             ))}
                         </tbody>
                     </table>
+                    </div>
                 </div>
                 <div className="order-status">
                     <h2>Update Status</h2>

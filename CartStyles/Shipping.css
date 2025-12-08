@@ -19,8 +19,13 @@
    }
    
    @media (max-width: 768px) {
-    form {
+    .shipping-form {
       grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .shipping-form-header {
+      margin-bottom: 20px;
     }
    }
    

@@ -58,7 +58,8 @@ function CartPage() {
                             {cartItems && cartItems.map((item) => <CartItem item={item} key={item.name} />)}
                         </div>
                     </div>
-                    <div className='shipping-page'>
+                    <div className="price-summary">
+                        <div className='shipping-page'>
                         <div className=" shipping-summary">
                             <h3 className="price-summary-header">Shipping Method</h3>
                             <div className='shipping-item'>
@@ -85,8 +86,6 @@ function CartPage() {
                             </div>
                         </div>
                     </div>
-                    {/* Price summary*/}
-                    <div className="price-summary">
                         <h3 className="price-summary-header">Price Summary</h3>
                         <div className="summary-item">
                             <p className="summary-label">Subtotal</p>
