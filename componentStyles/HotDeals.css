@@ -1,6 +1,6 @@
 .hot-deals-section {
     padding: 2rem;
-    background-color: #f9f9f9;
+    background-color: var(--background);
 }
 
 .hot-deals-header {
@@ -43,10 +43,10 @@
 }
 
 .hot-deal-card {
-    background: #fff;
+    background: var(--background);
     border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    box-shadow: var(--shadow-sm);
     transition: all 0.3s ease-in-out;
     border: 1px solid #eee;
     margin: 0 auto;

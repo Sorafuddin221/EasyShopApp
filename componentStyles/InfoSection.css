@@ -2,7 +2,7 @@
   display: flex;
   justify-content: space-around;
   padding: 2rem;
-  background-color: #f5f5f5;
+  background-color: var(--background);
 }
 
 .info-column {
@@ -24,17 +24,17 @@
 
 .info-card svg {
   font-size: 3rem;
-  color: #333;
+  color: var(--foreground);
 }
 
 .info-card h3 {
   margin: 1rem 0 0.5rem;
   font-size: 1.25rem;
-  color: #333;
+  color: var(--foreground);
 }
 
 .info-card p {
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .info-column a {
