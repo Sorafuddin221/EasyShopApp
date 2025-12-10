@@ -11,7 +11,6 @@ const config={
     }
 }
 const {data}=await axios.post('/api/register',userData,config)
-console.log('Registration data',data);
 return data
 
 }catch(error){
@@ -28,7 +27,6 @@ const config={
     }
 }
 const {data}=await axios.post('/api/login',{email,password},config)
-console.log('Login data',data);
 return data
 
 }catch(error){
@@ -172,7 +170,6 @@ const userSlice=createSlice({
             state.success=action.payload.success
             state.user=action.payload?.user || null
             state.isAuthenticated=Boolean(action.payload?.user)
-            console.log(state.user);
 
              //store in localStogage
             if (typeof window !== 'undefined') {
