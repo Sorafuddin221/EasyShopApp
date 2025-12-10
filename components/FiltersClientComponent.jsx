@@ -10,8 +10,6 @@ function FiltersClientComponent({ categories, recentProducts }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentCategory = searchParams.get('category');
-
-  console.log('Recent Products in Filters:', recentProducts); // DEBUGGING
   
   const handleCategoryClick = (categoryName) => {
     const newSearchParams = new URLSearchParams(searchParams.toString());
