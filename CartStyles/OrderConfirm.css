@@ -66,8 +66,8 @@
     padding: 12px 30px;
     font-size: 1rem;
     font-weight: bold;
-    color: var(--foreground);
-    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    background-color: var(--foreground);
     border: none;
     border-radius: 8px;
     cursor: pointer;

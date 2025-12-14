@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '@/CartStyles/Shipping.css';
 import PageTitle from '@/components/PageTitle';
 import CheckoutPath from '@/Cart/CheckoutPath';
@@ -19,6 +19,25 @@ function ShippingPage() {
     const [country, setCountry] = useState(shippingInfo.country || "BD"); // Default to Bangladesh
     const [state, setState] = useState(shippingInfo.state || "");
     const [city, setCity] = useState(shippingInfo.city || "");
+    const [isDivisionDisabled, setIsDivisionDisabled] = useState(false);
+
+    // Get the exact "Dhaka" division name from bdData
+    const dhakaDivisionName = bdData.divisions.find(div => div.name.toLowerCase() === 'dhaka')?.name || 'Dhaka';
+
+    useEffect(() => {
+        if (shippingInfo.shippingMethod === "inside") {
+            setState(dhakaDivisionName);
+            setCity(""); // Clear city if division is forced
+            setIsDivisionDisabled(true);
+        } else {
+            setIsDivisionDisabled(false);
+            // If previously forced to Dhaka, and now outside, clear state
+            if (state === dhakaDivisionName && shippingInfo.shippingMethod !== "inside") {
+                setState("");
+                setCity("");
+            }
+        }
+    }, [shippingInfo.shippingMethod]); // Depend on shippingMethod changes
 
     const router = useRouter();
     const shippingInfoSubmit = (e) => {
@@ -27,7 +46,7 @@ function ShippingPage() {
             toast.error('Invalid Phone number ! it should be 11 Digits', { position: 'top-center', autoClose: 3000 });
             return;
         }
-        dispatch(saveShippingInfo({ address, pinCode, state, city, country, phoneNumber }));
+        dispatch(saveShippingInfo({ address, pinCode, state, city, country, phoneNumber, shippingMethod: shippingInfo.shippingMethod }));
         router.push('/order/confirm');
     };
 
@@ -71,7 +90,7 @@ function ShippingPage() {
                                 setCity("");
                                 setState(e.target.value);
 
-                            }} id="state" name="state">
+                            }} id="state" name="state" disabled={isDivisionDisabled}>
                                 <option value="">Select a Division</option>
                                 {bdData.divisions.map((item) => (
                                     <option value={item.name} key={item.name}>{item.name}</option>

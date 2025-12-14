@@ -18,7 +18,7 @@ function CartPage() {
 
     const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
     const tax = subtotal * 0; // Tax is 0 based on original code
-    const shippingCharges = shippingMethod === "inside" ? 80 : 120;
+    const shippingCharges = shippingMethod === "inside" ? 70 : 85;
     const total = subtotal + tax + shippingCharges;
 
     const router = useRouter();
@@ -61,7 +61,7 @@ function CartPage() {
                     <div className="price-summary">
                         <div className='shipping-page'>
                         <div className=" shipping-summary">
-                            <h3 className="price-summary-header">Shipping Method</h3>
+                            <h3 className="price-summary-header">Shipping Zone</h3>
                             <div className='shipping-item'>
                                 <input
                                     type="radio"
@@ -71,7 +71,7 @@ function CartPage() {
                                     checked={shippingMethod === "inside"}
                                     onChange={() => setShippingMethod("inside")}
                                 />
-                                <label htmlFor="inside">Inside Dhaka (80 TK)</label>
+                                <label htmlFor="inside">Inside Dhaka (70 TK)</label>
                             </div>
                             <div className='shipping-item'>
                                 <input
@@ -82,7 +82,7 @@ function CartPage() {
                                     checked={shippingMethod === "outside"}
                                     onChange={() => setShippingMethod("outside")}
                                 />
-                                <label htmlFor="outside">Outside Dhaka (120 TK)</label>
+                                <label htmlFor="outside">Outside Dhaka (85 TK)</label>
                             </div>
                         </div>
                     </div>
