@@ -8,9 +8,9 @@
     z-index: 1000;
     display: flex;
     flex-direction: column;
-  }
+}
 
-  .top-header {
+.top-header {
     background-color: var(--primary-main);
     color: var(--text-light);
     display: flex;
@@ -18,18 +18,16 @@
     align-items: center;
     padding: 0.4rem 1.5rem;
     font-size: 0.875rem;
-  }
+    transition: transform 0.3s ease-in-out; /* Smooth transition for hiding */
+}
 
-  .top-header-left,
-  .top-header-right {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
+.top-header--hidden {
+    transform: translateY(-100%); /* Hide it by moving it up */
+}
 
-  .main-nav {
+.main-nav {
     background-color: var(--bg-primary);
-  }
+}
   
   .navbar-container {
     max-width: 1200px;

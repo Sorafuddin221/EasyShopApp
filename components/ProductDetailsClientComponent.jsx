@@ -14,7 +14,10 @@ import { removeMessage, addItemsToCart } from '@/features/cart/cartSlice';
 import Zoom from 'react-medium-image-zoom';
 import 'react-medium-image-zoom/dist/styles.css';
 
+import '@/pageStyles/ProductDetailsTabs.css';
 import RelatedProducts from './RelatedProducts'; // New import
+import ReviewsTab from './ReviewsTab';
+import CustomerQueryTab from './CustomerQueryTab';
 
 function ProductDetailsClientComponent({ initialProduct, productId }) {
     const { id } = initialProduct ? initialProduct : { id: productId }; // Use initialProduct if available, otherwise productId
@@ -22,9 +25,11 @@ function ProductDetailsClientComponent({ initialProduct, productId }) {
     const [comment, setComment] = useState('');
     const [quantity, setQuantity] = useState(1);
     const [selectedImage, setSelectedImage] = useState(null);
+    const [activeTab, setActiveTab] = useState('reviews');
 
     const { loading, error, product: reduxProduct, reviewSuccess, reviewLoading } = useSelector((state) => state.product);
     const { loading: cartLoading, error: cartError, success, message } = useSelector((state) => state.cart);
+    const { user } = useSelector((state) => state.user);
 
     const dispatch = useDispatch();
 
@@ -138,56 +143,55 @@ function ProductDetailsClientComponent({ initialProduct, productId }) {
 
     return (
         <>
-            // Add this inside the main return function of ProductDetailsClientComponent
-<script
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{
-        __html: JSON.stringify({
-            "@context": "https://schema.org/",
-            "@type": "Product",
-            "name": product.name,
-            "image": product.image.map((img) => img.url),
-            "description": product.description,
-            "sku": product._id,
-            "brand": {
-                "@type": "Brand",
-                "name": "My E-Shop"
-            },
-            "offers": {
-                "@type": "Offer",
-                "url": `${URL}/product/${product._id}`,
-                "priceCurrency": "BDT",
-                "price": product.offeredPrice ? product.offeredPrice : product.price,
-                "itemCondition": "https://schema.org/NewCondition",
-                "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-                "seller": {
-                    "@type": "Organization",
-                    "name": "My E-Shop"
-                }
-            },
-            "aggregateRating": {
-                "@type": "AggregateRating",
-                "ratingValue": product.ratings,
-                "reviewCount": product.numOfReviews
-            },
-            "review": product.reviews.map((review) => ({
-                "@type": "Review",
-                "author": {
-                    "@type": "Person",
-                    "name": review.name
-                },
-                "datePublished": review.createdAt,
-                "reviewBody": review.comment,
-                "reviewRating": {
-                    "@type": "Rating",
-                    "ratingValue": review.rating
-                }
-            }))
-        })
-    }}
-/>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org/",
+                        "@type": "Product",
+                        "name": product.name,
+                        "image": product.image.map((img) => img.url),
+                        "description": product.description,
+                        "sku": product._id,
+                        "brand": {
+                            "@type": "Brand",
+                            "name": "My E-Shop"
+                        },
+                        "offers": {
+                            "@type": "Offer",
+                            "url": `${URL}/product/${product._id}`,
+                            "priceCurrency": "BDT",
+                            "price": product.offeredPrice ? product.offeredPrice : product.price,
+                            "itemCondition": "https://schema.org/NewCondition",
+                            "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+                            "seller": {
+                                "@type": "Organization",
+                                "name": "My E-Shop"
+                            }
+                        },
+                        "aggregateRating": {
+                            "@type": "AggregateRating",
+                            "ratingValue": product.ratings,
+                            "reviewCount": product.numOfReviews
+                        },
+                        "review": product.reviews.map((review) => ({
+                            "@type": "Review",
+                            "author": {
+                                "@type": "Person",
+                                "name": review.name
+                            },
+                            "datePublished": review.createdAt,
+                            "reviewBody": review.comment,
+                            "reviewRating": {
+                                "@type": "Rating",
+                                "ratingValue": review.rating
+                            }
+                        }))
+                    })
+                }}
+            />
 
-<PageTitle title={`${product.name} -Details`} />
+            <PageTitle title={`${product.name} -Details`} />
             <div className="product-details-container">
                 <div className="product-detail-container">
                     <div className="product-image-container">
@@ -221,8 +225,9 @@ function ProductDetailsClientComponent({ initialProduct, productId }) {
                         <p className="product-price">
                             {product.offeredPrice ? (
                                 <>
-                                                        <span className="original-price">TK {product.price}</span>
-                                                        <span className="offered-price">TK {product.offeredPrice}</span>                                </>
+                                    <span className="original-price">TK {product.price}</span>
+                                    <span className="offered-price">TK {product.offeredPrice}</span>
+                                </>
                             ) : (
                                 <strong>Price: TK {product.price}</strong>
                             )}
@@ -250,43 +255,48 @@ function ProductDetailsClientComponent({ initialProduct, productId }) {
                         </div>
                             <button className="add-to-cart-btn" onClick={addToCart} disabled={cartLoading} >{cartLoading ? 'Adding' : ' Add to card'}</button>
                         </>)}
-                        <form className="review-from" onSubmit={handleReviewSubmit}>
-                            <h3>Write a Review</h3>
-                            <MuiRating
-                                value={userRating}
-                                onChange={(event, newValue) => {
-                                    setUserRating(newValue);
-                                }}
-                            />
-                            <textarea required onChange={(e) => setComment(e.target.value)} value={comment} className="review-input"></textarea>
-                            <button disabled={reviewLoading} className="submit-review-btn">{reviewLoading ? 'Submitting....' : 'Submit Review'}</button>
-                        </form>
                     </div>
                 </div>
-                <div className="reviews-container">
-                    <h3>Customer Reviews</h3>
-                    {product.reviews && product.reviews.length > 0 ? (<div className="reviews-section">
-                        {product.reviews.map((review, index) => (
-                            <div className="review-item" key={index}>
-                                <div className="review-header">
-                                    <MuiRating value={review.rating} precision={0.5} readOnly />
-                                </div>
-                                <p className="review-comment">
-                                    {review.comment}
-                                </p>
-                                <p className="review-name">
-                                    By : {review.name}
-                                </p>
-                            </div>))}
-                    </div>) : (
-                        <p className="no-reviews">
-                            No reviews yes.Be the first to review this product!
-                        </p>
-                    )}
+
+                <div className="product-details-tabs">
+                    <div className="tab-headers">
+                        <button
+                            className={`tab-header ${activeTab === 'reviews' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('reviews')}
+                        >
+                            Reviews
+                        </button>
+                        {user && (
+                            <button
+                                className={`tab-header ${activeTab === 'queries' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('queries')}
+                            >
+                                Customer Queries
+                            </button>
+                        )}
+                    </div>
+                    <div className="tab-content">
+                        {activeTab === 'reviews' && (
+                            <ReviewsTab
+                                product={product}
+                                userRating={userRating}
+                                setUserRating={setUserRating}
+                                comment={comment}
+                                setComment={setComment}
+                                handleReviewSubmit={handleReviewSubmit}
+                                reviewLoading={reviewLoading}
+                            />
+                        )}
+                        {activeTab === 'queries' && user && (
+                            <CustomerQueryTab
+                                product={product}
+                                user={user}
+                            />
+                        )}
+                    </div>
                 </div>
             </div>
 
-            {/* Add RelatedProducts component here */}
             {product && product.category && (
                 <RelatedProducts
                     productId={product._id}

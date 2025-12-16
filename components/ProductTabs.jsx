@@ -39,8 +39,8 @@ const ProductTabs = () => {
 
     return (
         <div className="product-tabs-container">
-            <h2 className="product-tabs-heading">Top Products</h2>
-            <p className="product-tabs-subheading">Browse our top products</p>
+            <h2 className="product-tabs-heading">Our Products</h2>
+            <p className="product-tabs-subheading">Check out our variety of products</p>
             <div className="product-tabs">
                 <button
                     className={`tab-btn ${activeTab === 'featured' ? 'active' : ''}`}
@@ -53,6 +53,18 @@ const ProductTabs = () => {
                     onClick={() => setActiveTab('new-arrival')}
                 >
                     New Arrivals
+                </button>
+                <button
+                    className={`tab-btn ${activeTab === 'top-rated' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('top-rated')}
+                >
+                    Top Rated
+                </button>
+                <button
+                    className={`tab-btn ${activeTab === 'top-selling' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('top-selling')}
+                >
+                    Top Selling
                 </button>
                 <button
                     className={`tab-btn ${activeTab === 'offer' ? 'active' : ''}`}

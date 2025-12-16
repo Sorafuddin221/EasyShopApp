@@ -1,7 +1,88 @@
+.filter-section {
+    padding: 1.5rem;
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+    background-color: var(--background);
+}
+
+.filter-group {
+    margin-bottom: 1.5rem;
+}
+
+.filter-heading {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.filter-subheading {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+}
+
+.filter-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.filter-section li {
+    padding: 0.5rem 0;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.filter-section li:hover {
+    color: #000;
+}
+
+.filter-section li.active {
+    font-weight: 600;
+    color: var(--background);
+}
+
+.subcategory-list {
+    padding-left: 1rem;
+}
+
+.price-inputs {
+    display: flex;
+    gap: 1rem;
+}
+
+.price-inputs input,
+.filter-group input[type="text"],
+.filter-group select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.apply-filters-btn {
+    width: 100%;
+    padding: 1rem;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-bottom: 1.5rem;
+}
+
+.apply-filters-btn:hover {
+    background-color: #333;
+}
+
 /* Recent Products Sidebar */
 .recent-products-sidebar {
   margin-top: 2rem;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid #eaeaea;
   padding-top: 1.5rem;
 }
 
@@ -23,7 +104,7 @@
 }
 
 .recent-product-card:hover {
-  background-color: var(--primary-light);
+  background-color: #f0f0f0;
 }
 
 .recent-product-image img {
@@ -46,6 +127,6 @@
 .recent-product-price {
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--primary-main);
+  color: #000;
   margin: 0;
 }

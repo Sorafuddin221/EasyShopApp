@@ -24,6 +24,21 @@ function Navbar() {
     const {cartItems}=useSelector(state=>state.cart || {cartItems: []});
     const [isClient, setIsClient] = useState(false);
 
+    const [topHeaderVisible, setTopHeaderVisible] = useState(true);
+    const [prevScrollPos, setPrevScrollPos] = useState(0);
+
+    const handleScroll = () => {
+        const currentScrollPos = window.pageYOffset;
+        setTopHeaderVisible(prevScrollPos > currentScrollPos || currentScrollPos < 10);
+        setPrevScrollPos(currentScrollPos);
+    };
+
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [prevScrollPos, topHeaderVisible, handleScroll]);
+
+
     useEffect(() => {
         setIsClient(true);
     }, []);
@@ -44,7 +59,7 @@ function Navbar() {
       }
   return (
     <nav className="navbar">
-      <div className="top-header">
+      <div className={`top-header ${!topHeaderVisible ? 'top-header--hidden' : ''}`}>
         <div className="top-header-left">
           <PhoneIcon />
           <span>+1234567890</span>

@@ -77,6 +77,34 @@ image:[
                 }
             }
         ],
+        customerQueries: [
+            {
+                user: {
+                    type: mongoose.Schema.ObjectId,
+                    ref: "User",
+                    required: true
+                },
+                question: {
+                    type: String,
+                    required: true
+                },
+                answer: {
+                    type: String
+                },
+                name: {
+                    type: String,
+                    required: true
+                },
+                createdAt: {
+                    type: Date,
+                    default: Date.now
+                },
+                answeredBy: {
+                    type: mongoose.Schema.ObjectId,
+                    ref: "User"
+                }
+            }
+        ],
         user:{
             type:mongoose.Schema.ObjectId,
             ref:"User",

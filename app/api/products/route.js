@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import connectMongoDatabase from '@/lib/db';
 import Product from '@/models/productModel';
 import Category from '@/models/categoryModel';
+import Order from '@/models/orderModel';
 import APIFunctionality from '@/utils/apiFunctionality';
 // import HandleError from '@/utils/handleError'; // Not used, can be removed
 
@@ -11,11 +12,59 @@ export async function GET(req) {
     let queryStr = Object.fromEntries(searchParams.entries());
 
     const discountParam = searchParams.get('discount');
+    const tabKeyword = queryStr.keyword;
     const page = Number(queryStr.page) || 1;
     const resultsPerPage = 6;
 
     try {
-        if (discountParam) {
+        if (tabKeyword === 'top-selling') {
+            const countResult = await Order.aggregate([
+                { $unwind: "$orderItems" },
+                { $group: { _id: "$orderItems.product" } },
+                { $count: "total" }
+            ]);
+            const productCount = countResult.length > 0 ? countResult[0].total : 0;
+            const totalPages = Math.ceil(productCount / resultsPerPage);
+
+            if (page > totalPages && productCount > 0) {
+                return NextResponse.json({ message: "This page does not exist" }, { status: 404 });
+            }
+
+            const topSellingProducts = await Order.aggregate([
+                { $unwind: "$orderItems" },
+                {
+                    $group: {
+                        _id: "$orderItems.product",
+                        totalQuantity: { $sum: "$orderItems.quantity" }
+                    }
+                },
+                { $sort: { totalQuantity: -1 } },
+                { $skip: resultsPerPage * (page - 1) },
+                { $limit: resultsPerPage },
+                {
+                    $lookup: {
+                        from: "products",
+                        localField: "_id",
+                        foreignField: "_id",
+                        as: "product"
+                    }
+                },
+                { $unwind: "$product" },
+                { $replaceRoot: { newRoot: "$product" } }
+            ]);
+
+            const populatedProducts = await Product.populate(topSellingProducts, { path: 'category' });
+
+            return NextResponse.json({
+                success: true,
+                products: populatedProducts,
+                productCount,
+                resultsPerPage,
+                totalPages,
+                currentpage: page
+            }, { status: 200 });
+
+        } else if (discountParam) {
             const discountValue = Number(discountParam);
             if (isNaN(discountValue) || discountValue <= 0 || discountValue > 100) {
                 return NextResponse.json({ message: "Invalid discount value provided." }, { status: 400 });
@@ -87,8 +136,7 @@ export async function GET(req) {
 
         } else {
             // Existing logic using APIFunctionality
-            const tabKeyword = queryStr.keyword;
-            const specialKeywords = ['featured', 'new-arrival', 'offer'];
+            const specialKeywords = ['featured', 'new-arrival', 'offer', 'top-rated'];
 
             if (specialKeywords.includes(tabKeyword)) {
                 delete queryStr.keyword;
@@ -99,7 +147,7 @@ export async function GET(req) {
                     // For 'offer', APIFunctionality needs to handle the offeredPrice filter
                     // This will be done in APIFunctionality.filter()
                     queryStr.hasOffer = true; 
-                } else if (tabKeyword === 'featured') {
+                } else if (tabKeyword === 'featured' || tabKeyword === 'top-rated') {
                     queryStr.sort = '-ratings';
                 }
             }

@@ -8,46 +8,41 @@ import connectMongoDatabase from '@/lib/db';
 import ProductModel from '@/models/productModel';
 import APIFunctionality from '@/utils/apiFunctionality';
 import Filters from '@/components/Filters';
-import ProductsClientComponent from './ProductsClientComponent'; 
+import ProductsClientComponent from './ProductsClientComponent';
 
-async function getProducts({ keyword, category, subcategory, page = 1 }) {
+async function getProducts(resolvedSearchParams) {
   await connectMongoDatabase();
-  
-  let queryStr = { page }; 
-  if (keyword) {
-    queryStr.keyword = keyword;
-  }
-  // Pass category and subcategory names to queryStr for APIFunctionality to handle
-  if (category) {
-      queryStr.category = category;
-  }
-  if (subcategory) {
-      queryStr.subcategory = subcategory;
-  }
-  
-  const resultsPerPage = 6; 
-  const apiFeatures = new APIFunctionality(ProductModel.find(), queryStr)
-    .search();
-  
-  // Await the filter method since it's now async
-  await apiFeatures.filter(); 
 
-  apiFeatures.sort(); 
+    // Convert resolvedSearchParams to a plain object
+    const queryObj = {};
+    for (const [key, value] of Object.entries(resolvedSearchParams)) {
+        queryObj[key] = value;
+    }
+
+  const limit = Number(queryObj.limit) || 6;
+  const page = Number(queryObj.page) || 1;
+
+  const apiFeatures = new APIFunctionality(ProductModel.find(), queryObj)
+    .search();
+
+  await apiFeatures.filter();
+
+  apiFeatures.sort();
 
   const filteredQuery = apiFeatures.query.clone();
   const productCount = await filteredQuery.countDocuments();
 
-  const totalPages = Math.ceil(productCount / resultsPerPage);
+  const totalPages = Math.ceil(productCount / limit);
 
-  apiFeatures.pagination(resultsPerPage);
+  apiFeatures.pagination();
   const products = await apiFeatures.query.populate('category');
 
   return {
     products: JSON.parse(JSON.stringify(products)),
     productCount,
-    resultsPerPage,
+    resultsPerPage: limit,
     totalPages,
-    currentPage: parseInt(page, 10),
+    currentPage: page,
   };
 }
 
@@ -72,12 +67,11 @@ export default async function ProductsPage({ searchParams }) {
   } else {
     resolvedSearchParams = searchParams;
   }
-  
-    const { keyword, category, subcategory, page } = resolvedSearchParams;
-    const { products, productCount, totalPages, currentPage } = await getProducts({ keyword, category, subcategory, page });
+
+    const { products, productCount, totalPages, currentPage, resultsPerPage } = await getProducts(resolvedSearchParams);
     const categories = await getCategories();
     const recentProducts = await getRecentProducts();
-  
+
     return (
       <>
         <PageTitle title="All Products" />
@@ -87,10 +81,11 @@ export default async function ProductsPage({ searchParams }) {
                             products={products}
                             totalPages={totalPages}
                             currentPage={currentPage}
-                            keyword={keyword}
+                            keyword={resolvedSearchParams.keyword}
                             categories={categories}
-                            category={category}
-                            showSubCategoryCards={false} 
+                            category={resolvedSearchParams.category}
+                            showSubCategoryCards={false}
+                            resultsPerPage={resultsPerPage}
                         />            </div>
       </>
     );

@@ -23,10 +23,11 @@ class APIFunctionality {
 
         console.log("APIFunctionality filter called with queryStr:", this.queryStr);
 
-        const queryCopy = { ...this.queryStr
-        };
+        // This creates a shallow copy, which is fine
+        let queryObj = { ...this.queryStr };
+
         const removeFields = ["keyword", "page", "limit", "sort", "category", "subcategory", "hasOffer"];
-        removeFields.forEach(key => delete queryCopy[key]);
+        removeFields.forEach(key => delete queryObj[key]);
 
         let combinedFilters = {};
         let resolvedCategoryIds = [];
@@ -40,13 +41,13 @@ class APIFunctionality {
                     $options: 'i'
                 }
             }).populate('subcategories'); // Populate subcategories to get their IDs
-            
+
             console.log("Main Category doc found:", mainCategoryDoc ? mainCategoryDoc.name : "None");
 
             if (mainCategoryDoc) {
                 if (this.queryStr.subcategory) { // If a specific subcategory is requested
                     console.log("Filtering by specific subcategory name:", this.queryStr.subcategory);
-                    const specificSubCategoryDoc = mainCategoryDoc.subcategories.find(sub => 
+                    const specificSubCategoryDoc = mainCategoryDoc.subcategories.find(sub =>
                         sub.name.toLowerCase() === this.queryStr.subcategory.toLowerCase()
                     );
                     if (specificSubCategoryDoc) {
@@ -74,18 +75,20 @@ class APIFunctionality {
             combinedFilters.offeredPrice = { $exists: true, $ne: null };
         }
 
-        console.log("Final combinedFilters (after category/subcategory logic):", combinedFilters);
-
-        // Price and rating filtering
-        let queryStr = JSON.stringify(queryCopy);
+        // Convert the remaining queryObj to Mongoose format for other filters if any
+        let queryStr = JSON.stringify(queryObj);
         queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, key => `$${key}`);
-
-        this.query = this.query.find({ ...JSON.parse(queryStr),
+        
+        // Combine all filters
+        this.query = this.query.find({
+            ...JSON.parse(queryStr),
             ...combinedFilters
         });
-        return this
+        
+        return this;
     }
-    pagination(resultPerPage) {
+    pagination() {
+        const resultPerPage = Number(this.queryStr.limit) || 6;
         const currentpage = Number(this.queryStr.page) || 1
         const skip = resultPerPage * (currentpage - 1);
         this.query = this.query.limit(resultPerPage).skip(skip)

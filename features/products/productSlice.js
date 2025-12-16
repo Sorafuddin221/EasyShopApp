@@ -65,6 +65,36 @@ export const createReview=createAsyncThunk('product/createReview',async(reviewDa
     }
 })
 
+// Ask Question
+export const askQuestion = createAsyncThunk('product/askQuestion', async (questionData, { rejectWithValue }) => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+        const { data } = await axios.post('/api/product/query', questionData, config);
+        return data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || 'An error occurred');
+    }
+});
+
+// Answer Question
+export const answerQuestion = createAsyncThunk('product/answerQuestion', async (answerData, { rejectWithValue }) => {
+    try {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+        const { data } = await axios.put('/api/admin/query', answerData, config);
+        return data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || 'An error occurred');
+    }
+});
+
 const productSlice=createSlice({
 name:'product',
 initialState:{
@@ -76,7 +106,9 @@ initialState:{
     resultsPerpage:4,
     totalPages:0,
     reviewSuccess:false,
-    reviewLoading:false
+    reviewLoading:false,
+    querySuccess: false,
+    queryLoading: false
 
 },
 reducers:{
@@ -88,6 +120,9 @@ reducers:{
     },
      removeSuccess:(state)=>{
         state.reviewSuccess=false
+    },
+    removeQuerySuccess: (state) => {
+        state.querySuccess = false
     }
 },
 extraReducers:(builder)=>{
@@ -156,8 +191,32 @@ builder.addCase(createReview.pending,(state)=>{
     state.reviewLoading=false;
     state.error=action.payload || 'something went wrong'
 })
+.addCase(askQuestion.pending, (state) => {
+    state.queryLoading = true;
+    state.error = null
+})
+.addCase(askQuestion.fulfilled, (state, action) => {
+    state.queryLoading = false;
+    state.querySuccess = true;
+})
+.addCase(askQuestion.rejected, (state, action) => {
+    state.queryLoading = false;
+    state.error = action.payload || 'something went wrong'
+})
+.addCase(answerQuestion.pending, (state) => {
+    state.queryLoading = true;
+    state.error = null
+})
+.addCase(answerQuestion.fulfilled, (state, action) => {
+    state.queryLoading = false;
+    state.querySuccess = true;
+})
+.addCase(answerQuestion.rejected, (state, action) => {
+    state.queryLoading = false;
+    state.error = action.payload || 'something went wrong'
+})
 
 }
 })
-export const {removeErrors,removeSuccess,setProduct}=productSlice.actions;
+export const {removeErrors,removeSuccess,setProduct, removeQuerySuccess}=productSlice.actions;
 export default productSlice.reducer;

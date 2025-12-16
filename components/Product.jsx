@@ -36,28 +36,29 @@ function Product({product, hideAddToCartButton = false}) {
             {discount && <div className="discount-badge">{discount}% off</div>}
             <img src={product.image && product.image.length > 0 ? product.image[0].url : '/images/blog-placeholder.png'} alt={product.name} className='product-image-card' />
             <div className="product-details">
-                <h3 className="product-title">{product.name}</h3>
-                <p className="home-price">
-                    {product.offeredPrice ? (
-                        <>
-                            <span className="original-price">TK {product.price}</span>
-                            <span className="offered-price">TK {product.offeredPrice}</span>
-                        </>
-                    ) : (
-                        <strong>Price: TK {product.price}</strong>
-                    )}
-                </p>
-                <div className="rating_container">
-                  <Rating
-                   value={product.ratings}
-                   onRatingChange={handleRatingChange}
-                   disabled={true}
-                   />
-                </div>
-                <span className="productCardSpan">
-                  ({product.numOfReviews} {product.numOfReviews===1?"Review":"Reviews"})
-                </span>
-            </div>
+    <h3 className="product-title">{product.name}</h3>
+    <div className="product-meta">
+        <span>{new Date(product.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+        <span>{product.numOfReviews} {product.numOfReviews === 1 ? "Comment" : "Comments"}</span>
+    </div>
+    <div className="rating_container">
+        <Rating
+            value={product.ratings}
+            onRatingChange={handleRatingChange}
+            disabled={true}
+        />
+    </div>
+    <p className="home-price">
+        {product.offeredPrice ? (
+            <>
+                <span className="original-price">TK {product.price}</span>
+                <span className="offered-price">TK {product.offeredPrice}</span>
+            </>
+        ) : (
+            <strong>TK {product.price}</strong>
+        )}
+    </p>
+</div>
         </div>
       </Link>
     </div>
