@@ -80,6 +80,17 @@ function DashboardPage() {
                             </Link>
                         </div>
                         <div className="nav-section">
+                            <h3>Offer Cards</h3>
+                            <Link href="/admin/offer-cards/all">
+                                <Inventory className='nav-icon' />
+                                All Offer Cards
+                            </Link>
+                            <Link href="/admin/offer-cards/create">
+                                <Inventory className='nav-icon' />
+                                Add New Offer Card
+                            </Link>
+                        </div>
+                        <div className="nav-section">
                             <h3>Users</h3>
                             <Link href="/admin/users">
                                 <People className='nav-icon' />
