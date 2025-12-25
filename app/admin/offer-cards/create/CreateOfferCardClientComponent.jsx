@@ -8,6 +8,7 @@ function CreateOfferCardClientComponent() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [buttonUrl, setButtonUrl] = useState('');
+  const [displayLocation, setDisplayLocation] = useState('none'); // New state for display location
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -79,7 +80,7 @@ function CreateOfferCardClientComponent() {
       return;
     }
 
-    const newOfferCard = { imageUrl: finalImageUrl, title, description, buttonUrl };
+    const newOfferCard = { imageUrl: finalImageUrl, title, description, buttonUrl, displayLocation }; // Include displayLocation
 
     const existingOfferCards = JSON.parse(localStorage.getItem('offerCards')) || [];
     const updatedOfferCards = [...existingOfferCards, newOfferCard];
@@ -90,6 +91,7 @@ function CreateOfferCardClientComponent() {
     setTitle('');
     setDescription('');
     setButtonUrl('');
+    setDisplayLocation('none'); // Reset display location
     setImageFile(null);
     setImagePreview('');
   };
@@ -153,6 +155,19 @@ function CreateOfferCardClientComponent() {
             onChange={(e) => setButtonUrl(e.target.value)}
             placeholder="Enter button URL"
           />
+        </div>
+        {/* New form group for display location */}
+        <div className="form-group">
+          <label htmlFor="displayLocation">Display Location:</label>
+          <select
+            id="displayLocation"
+            value={displayLocation}
+            onChange={(e) => setDisplayLocation(e.target.value)}
+          >
+            <option value="none">None</option>
+            <option value="homepage_after_top_products">Homepage (After Top Products)</option>
+            <option value="products_page_after_pagination">Products Page (After Pagination)</option>
+          </select>
         </div>
         <button type="submit" className="btn btn-primary" disabled={uploading}>
           {uploading ? 'Uploading...' : 'Add Offer Card'}

@@ -36,6 +36,7 @@ function AllOfferCardsClientComponent() {
               <p><strong>Title:</strong> {card.title}</p>
               <p><strong>Description:</strong> {card.description}</p>
               <p><strong>Button URL:</strong> {card.buttonUrl || 'N/A'}</p>
+              <p><strong>Display Location:</strong> {card.displayLocation || 'N/A'}</p>
               <button
                 type="button"
                 onClick={() => handleDelete(index)}

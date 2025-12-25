@@ -1,16 +1,29 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Product from '@/components/Product';
 import NoProducts from '@/components/NoProducts';
 import Pagination from '@/components/Pagination';
 import Link from 'next/link';
+import OfferCardDisplay from '@/components/OfferCardDisplay';
+import RotatingOfferCards from '@/components/RotatingOfferCards'; // Import the new component
 import '@/componentStyles/Categories.css';
 
 const ProductsClientComponent = ({ products, totalPages, currentPage, keyword, categories, category, showSubCategoryCards }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
+
+    const [offerCards, setOfferCards] = useState([]);
+
+    useEffect(() => {
+        const savedOfferCards = JSON.parse(localStorage.getItem('offerCards')) || [];
+        setOfferCards(savedOfferCards);
+    }, []);
+
+    const productsPageOfferCards = offerCards.filter(
+        (card) => card.displayLocation === 'products_page_after_pagination'
+    );
 
     const handlePageChange = (page) => {
         const newSearchParams = new URLSearchParams(searchParams.toString());
@@ -59,6 +72,17 @@ const ProductsClientComponent = ({ products, totalPages, currentPage, keyword, c
                     totalPages={totalPages}
                     onPageChange={handlePageChange}
                 />
+            )}
+
+            {/* Dynamic Offer Cards for Products Page */}
+            {productsPageOfferCards.length > 0 && (
+                <section className="offer-section dynamic-products-page-offers">
+                    {productsPageOfferCards.length > 1 ? (
+                        <RotatingOfferCards cards={productsPageOfferCards} />
+                    ) : (
+                        <OfferCardDisplay card={productsPageOfferCards[0]} />
+                    )}
+                </section>
             )}
         </div>
     );

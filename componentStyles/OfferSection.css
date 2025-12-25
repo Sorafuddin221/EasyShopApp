@@ -66,6 +66,26 @@
   color: #333;
 }
 
+/* Styles for dynamic homepage and products page offer sections */
+.offer-section.dynamic-homepage-offers,
+.offer-section.dynamic-products-page-offers {
+    justify-content: center; /* Center content if less than 3 cards, or if one */
+}
+
+/* Ensure single offer cards take full width in dynamic sections */
+.offer-section.dynamic-homepage-offers .offer-card,
+.offer-section.dynamic-products-page-offers .offer-card {
+    flex: 1 1 100%; /* Allow to grow, shrink, and have a base of 100% width */
+    max-width: 100%; /* Ensure it doesn't exceed 100% */
+}
+
+/* Ensure RotatingOfferCards component also respects full width */
+.offer-section.dynamic-homepage-offers .rotating-offer-card-wrapper,
+.offer-section.dynamic-products-page-offers .rotating-offer-card-wrapper {
+    width: 100%;
+}
+
+
 @media (max-width: 768px) {
   .offer-section {
     flex-direction: column;
