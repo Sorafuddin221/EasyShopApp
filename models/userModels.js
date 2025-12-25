@@ -50,7 +50,7 @@ userSchema.pre("save",async function(next){
     next();
 })
 userSchema.methods.getJWTToken=function(){
-    return jwt.sign({id:this._id},process.env.JWT_SECRET_KEY || "fallback-secret-key",{
+    return jwt.sign({id:this._id, role:this.role},process.env.JWT_SECRET_KEY || "fallback-secret-key",{
         expiresIn:process.env.JWT_EXPIRE || '1d'
     })
 }
