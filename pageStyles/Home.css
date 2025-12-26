@@ -27,7 +27,7 @@
 
 .hero-section-wrapper {
   display: flex;
-  height: 100vh; /* Full viewport height */
+  height: 70vh; /* Full viewport height */
   margin-top: 6rem; /* Adjust based on header height */
   overflow: hidden; /* To prevent scrollbars on the main layout */
 }

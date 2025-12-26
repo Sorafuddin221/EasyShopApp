@@ -14,7 +14,7 @@ import { toast } from 'react-toastify';
 function CartPage() {
     const { cartItems, shippingInfo } = useSelector(state => state.cart);
     const dispatch = useDispatch();
-    const [shippingMethod, setShippingMethod] = useState(shippingInfo.shippingMethod || "inside");
+    const [shippingMethod, setShippingMethod] = useState(shippingInfo.shippingMethod || null);
 
     // Load payment settings from localStorage
     const [paymentSettings, setPaymentSettings] = useState({
@@ -41,12 +41,18 @@ function CartPage() {
     const currentShippingCharges = 
         shippingMethod === "inside" 
             ? paymentSettings.insideDhakaShippingCost 
-            : paymentSettings.outsideDhakaShippingCost;
+            : shippingMethod === "outside"
+                ? paymentSettings.outsideDhakaShippingCost
+                : 0;
 
     const total = subtotal + tax + currentShippingCharges;
 
     const router = useRouter();
     const checkoutHandler = () => {
+        if (!shippingMethod) {
+            toast.error("Please select your shipping zone");
+            return;
+        }
         dispatch(saveShippingInfo({
             address: shippingInfo.address,
             pinCode: shippingInfo.pinCode,
@@ -88,7 +94,7 @@ function CartPage() {
                             <h3 className="price-summary-header">Shipping Zone</h3>
                             <div className='shipping-item'>
                                 <input
-                                    type="radio"
+                                    type="checkbox"
                                     id="inside"
                                     name="shippingMethod"
                                     value="inside"
@@ -99,7 +105,7 @@ function CartPage() {
                             </div>
                             <div className='shipping-item'>
                                 <input
-                                    type="radio"
+                                    type="checkbox"
                                     id="outside"
                                     name="shippingMethod"
                                     value="outside"
