@@ -26,29 +26,34 @@
 }
 
 .menu-options {
-    padding: 15px;
+    padding: 0;
     border-radius: 8px;
     position: absolute;
     top: 55px; 
     right: 0;
-    width: 150px;
+    width: 180px;
     z-index: 1000;
     background-color: var(--bg-primary);
-    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    overflow: hidden; /* Ensures child border-radius is respected */
 }
 
 .menu-option-btn {
     width: 100%;
-    padding: 12px;
-    margin-bottom: 5px;
+    padding: 12px 16px;
     border: none;
-    border-radius: 8px;
-    background-color: var(--primary-main);
-    color: var(--text-light);
+    background-color: transparent;
+    color: var(--text-primary);
     font-size: 16px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    box-shadow: var(--shadow-sm);
+    transition: background-color 0.2s ease, color 0.2s ease;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.menu-option-btn:last-child {
+    border-bottom: none;
 }
 
 .menu-option-btn:hover {
