@@ -15,6 +15,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import '../componentStyles/Navbar.css';
 import { useSelector } from 'react-redux';
 import UserDashboard from './UserDashboard';
+import Loader from './Loader';
 
 
 function Navbar({ siteLogoUrl, textIcon }) {
@@ -22,7 +23,7 @@ function Navbar({ siteLogoUrl, textIcon }) {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery,setSearchQuery]=useState("");
     const toggleMenu=()=>setisMenuOpen(!isMenuOpen);
-    const {isAuthenticated, user}=useSelector(state=>state.user || {});
+    const {isAuthenticated, user, loading}=useSelector(state=>state.user || {});
     const {cartItems}=useSelector(state=>state.cart || {cartItems: []});
     const [isClient, setIsClient] = useState(false);
 
@@ -113,15 +114,15 @@ function Navbar({ siteLogoUrl, textIcon }) {
                     {isClient && cartItems && <span className="cart-badge">{cartItems.length}</span>}
                   </Link>
               </div>
-              {isClient && isAuthenticated ? (
-              <UserDashboard user={user} />
-            ) : (
-              <div className="register-btn">
-                <Link href="/register" className='register-link'>
-                  <PersonAddIcon className="icon" />
-                </Link>
-              </div>
-            )}
+              {isClient && (
+                loading ? <Loader /> : 
+                isAuthenticated ? <UserDashboard user={user} /> :
+                <div className="register-btn">
+                  <Link href="/register" className='register-link'>
+                    <PersonAddIcon className="icon" />
+                  </Link>
+                </div>
+              )}
               <div className="navbar-hamburger" onClick={toggleMenu}>
                   {isMenuOpen? <CloseIcon className="icon"/>:<MenuIcon className="icon"/>}
               </div>

@@ -45,6 +45,7 @@ export default async function RootLayout({ children }) {
           <LayoutClient settings={settings}>{children}</LayoutClient>
           <ToastContainer />
         </ReduxProvider>
+        <div id="portal-root"></div>
       </body>
     </html>
   );

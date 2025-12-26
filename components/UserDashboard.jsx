@@ -1,12 +1,13 @@
-'use client';
+  'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '@/UserStyles/UserDashboard.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { logout, removeSuccess } from '@/features/user/userSlice';
 import { clearCart } from '@/features/cart/cartSlice';
+import { ArrowDropDown } from '@mui/icons-material';
 
 
 function UserDashboard({ user }) {
@@ -15,10 +16,22 @@ function UserDashboard({ user }) {
     const router = useRouter();
     const [menuVisible, setMenuVisible] = useState(false);
     const [isClient, setIsClient] = useState(false);
+    const profileRef = useRef(null);
+    const [menuStyle, setMenuStyle] = useState({});
 
     useEffect(() => {
         setIsClient(true);
     }, []);
+
+    useEffect(() => {
+        if (menuVisible && profileRef.current) {
+            const rect = profileRef.current.getBoundingClientRect();
+            setMenuStyle({
+                top: `${rect.bottom + window.scrollY}px`,
+                right: `${window.innerWidth - rect.right}px`,
+            });
+        }
+    }, [menuVisible]);
 
     function toggleMenu() {
         setMenuVisible(!menuVisible);
@@ -72,11 +85,12 @@ function UserDashboard({ user }) {
     return (
         <div className="dashboard-container">
             <div className={`overlay ${menuVisible ? 'show' : ''}`} onClick={toggleMenu}></div>
-            <div className="profile-header" onClick={toggleMenu}>
+            <div className="profile-header" onClick={toggleMenu} ref={profileRef}>
                 <img className='profile-avatar' src={user?.avatar?.url || './images/profile.png'} alt="profile-img" />
                 <span className="profile-name">{user?.name || 'User'}</span>
+                <ArrowDropDown className='profile-arrow' />
             </div>
-            {menuVisible && (<div className="menu-options">
+            {menuVisible && (<div className="menu-options" style={menuStyle}>
                 {options.map((item) => (
                     <button key={item.name} onClick={item.funcName} className={`menu-option-btn ${item.isCart ? (cartItems.length > 0 ? 'cart-not-empty' : '') : ''}`}>{item.name}</button>
                 ))}
