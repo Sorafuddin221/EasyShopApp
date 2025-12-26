@@ -14,6 +14,7 @@ import EmailIcon from '@mui/icons-material/Email';
 
 import '../componentStyles/Navbar.css';
 import { useSelector } from 'react-redux';
+import UserDashboard from './UserDashboard';
 
 
 function Navbar({ siteLogoUrl, textIcon }) {
@@ -21,7 +22,7 @@ function Navbar({ siteLogoUrl, textIcon }) {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery,setSearchQuery]=useState("");
     const toggleMenu=()=>setisMenuOpen(!isMenuOpen);
-    const {isAuthenticated}=useSelector(state=>state.user || {});
+    const {isAuthenticated, user}=useSelector(state=>state.user || {});
     const {cartItems}=useSelector(state=>state.cart || {cartItems: []});
     const [isClient, setIsClient] = useState(false);
 
@@ -57,6 +58,7 @@ function Navbar({ siteLogoUrl, textIcon }) {
           router.push(`/products`)
         }
         setSearchQuery("")
+        setIsSearchOpen(false);
       }
   return (
     <nav className="navbar">
@@ -91,7 +93,7 @@ function Navbar({ siteLogoUrl, textIcon }) {
                 </ul>
             </div>
             <div className="navbar-icons">
-            <form className={`search-container ${isSearchOpen ? 'active' : ''}`} onSubmit={handleSearchSubmit}>
+              <form className={`search-container ${isSearchOpen ? 'active' : ''}`} onSubmit={handleSearchSubmit}>
                 <input
                   type="text"
                   className='search-input'
@@ -99,24 +101,30 @@ function Navbar({ siteLogoUrl, textIcon }) {
                   value={searchQuery}
                   onChange={(e)=>setSearchQuery(e.target.value)}
                 />
-                <SearchIcon onClick={toggleSearch} className="search-icon-btn"/>
-            </form>
-                <div className="cart-container">
-                    <Link href="/cart">
-                      <ShoppingCartIcon className="icon"/>
-                      {isClient && cartItems && <span className="cart-badge">{cartItems.length}</span>}
-                    </Link>
-                </div>
-              {isClient && !isAuthenticated && (
-                <div className="register-btn">
+                {isSearchOpen ? (
+                  <CloseIcon onClick={toggleSearch} className="search-icon-btn" />
+                ) : (
+                  <SearchIcon onClick={toggleSearch} className="search-icon-btn"/>
+                )}
+              </form>
+              <div className="cart-container">
+                  <Link href="/cart">
+                    <ShoppingCartIcon className="icon"/>
+                    {isClient && cartItems && <span className="cart-badge">{cartItems.length}</span>}
+                  </Link>
+              </div>
+              {isClient && isAuthenticated ? (
+              <UserDashboard user={user} />
+            ) : (
+              <div className="register-btn">
                 <Link href="/register" className='register-link'>
-                  <PersonAddIcon className="icon"/>
+                  <PersonAddIcon className="icon" />
                 </Link>
-                </div>
-              )}
-                <div className="navbar-hamburger" onClick={toggleMenu}>
-                    {isMenuOpen? <CloseIcon className="icon"/>:<MenuIcon className="icon"/>}
-                </div>
+              </div>
+            )}
+              <div className="navbar-hamburger" onClick={toggleMenu}>
+                  {isMenuOpen? <CloseIcon className="icon"/>:<MenuIcon className="icon"/>}
+              </div>
             </div>
         </div>
       </div>

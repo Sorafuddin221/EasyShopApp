@@ -70,20 +70,18 @@ function UserDashboard({ user }) {
     }
 
     return (
-        <>
+        <div className="dashboard-container">
             <div className={`overlay ${menuVisible ? 'show' : ''}`} onClick={toggleMenu}></div>
-            <div className="dashboard-container">
-                <div className="profile-header" onClick={toggleMenu}>
-                    <img className='profile-avatar' src={user?.avatar?.url || './images/profile.png'} alt="profile-img" />
-                    <span className="profile-name">{user?.name || 'User'}</span>
-                </div>
-                {menuVisible && (<div className="menu-options">
-                    {options.map((item) => (
-                        <button key={item.name} onClick={item.funcName} className={`menu-option-btn ${item.isCart ? (cartItems.length > 0 ? 'cart-not-empty' : '') : ''}`}>{item.name}</button>
-                    ))}
-                </div>)}
+            <div className="profile-header" onClick={toggleMenu}>
+                <img className='profile-avatar' src={user?.avatar?.url || './images/profile.png'} alt="profile-img" />
+                <span className="profile-name">{user?.name || 'User'}</span>
             </div>
-        </>
+            {menuVisible && (<div className="menu-options">
+                {options.map((item) => (
+                    <button key={item.name} onClick={item.funcName} className={`menu-option-btn ${item.isCart ? (cartItems.length > 0 ? 'cart-not-empty' : '') : ''}`}>{item.name}</button>
+                ))}
+            </div>)}
+        </div>
     );
 }
 

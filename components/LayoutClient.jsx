@@ -5,10 +5,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { loadUser } from '@/features/user/userSlice';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import UserDashboard from './UserDashboard';
 
 export default function LayoutClient({ children, settings }) {
-  const { isAuthenticated, user } = useSelector((state) => state.user);
+  const { isAuthenticated } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -35,7 +34,6 @@ export default function LayoutClient({ children, settings }) {
     <>
       <Navbar siteLogoUrl={settings?.siteLogoUrl} textIcon={settings?.textIcon} />
       {children}
-      {isAuthenticated && user && <UserDashboard user={user} />}
       <Footer />
     </>
   );

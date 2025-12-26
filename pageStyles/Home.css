@@ -54,7 +54,7 @@
 @media (max-width: 768px) {
   .hero-section-wrapper {
     flex-direction: column; /* Stack vertically on smaller screens */
-    height: auto; /* Allow height to adjust */
+    min-height: 100vh; /* Ensure consistent height for children */
     margin-top: 4rem; /* Adjust margin for smaller screens */
   }
 
